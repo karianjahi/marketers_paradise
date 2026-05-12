@@ -14,5 +14,5 @@ class CampaignData(models.Model):
     uploaded_at = models.DateTimeField(auto_now_add=True)
     
     def __str__(self):
-        return f"{self.campaign_name} - {self.date}"
+        return f"{self.campaign_name} conducted on {self.date}"
     
