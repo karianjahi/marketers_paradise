@@ -1,11 +1,9 @@
-from django.shortcuts import render
-
 import pandas as pd
 
-from django.shortcuts import render, redirect
-from django.contrib import messages
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
 
-from .forms import CSVUploadForm
 from .models import CampaignData
 
 REQUIRED_COLUMNS = [
@@ -19,48 +17,54 @@ REQUIRED_COLUMNS = [
     "revenue",
 ]
 
-
-def upload_csv(request):
-    if request.method == "POST":
-        form = CSVUploadForm(request.POST, request.FILES)
-
-        if form.is_valid():
-            csv_file = request.FILES["file"]
-
-            try:
-                df = pd.read_csv(csv_file)
-
-                missing_columns = [
-                    col for col in REQUIRED_COLUMNS if col not in df.columns
-                ]
-
-                if missing_columns:
-                    messages.error(
-                        request,
-                        f"Missing columns: {', '.join(missing_columns)}"
-                    )
-                    return redirect("upload_csv")
-
-                for _, row in df.iterrows():
-                    CampaignData.objects.create(
-                        date=row["date"],
-                        campaign_name=row["campaign_name"],
-                        channel=row["channel"],
-                        impressions=row["impressions"],
-                        clicks=row["clicks"],
-                        conversions=row["conversions"],
-                        cost=row["cost"],
-                        revenue=row["revenue"],
-                    )
-
-                messages.success(request, "CSV uploaded successfully.")
-                return redirect("dashboard")
-
-            except Exception as e:
-                messages.error(request, f"Error processing file: {e}")
-                return redirect("upload_csv")
-
-    else:
-        form = CSVUploadForm() # what to create in the upload html once it hits there
-
-    return render(request, "analytics/upload.html", {"form": form})
+class CSVUploadAPIView(APIView):
+    def post(self, request):
+        csv_file = request.get("file")
+        
+        if not csv_file:
+            return Response(
+                {
+                    "error": "No file was uploaded. Please upload a csv file"
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        try:
+            df = pd.read_csv(csv_file)
+            missing_columns = [
+                column for column in REQUIRED_COLUMNS if column not in df.columns
+            ]
+            if missing_columns:
+                return Response(
+                    {
+                        "error": "Missing required columns",
+                        "missing_columns": missing_columns,
+                    },
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            created_count = 0
+            for _, row in df.iterrows():
+                CampaignData.object.create(
+                    date = row["date"],
+                    campaign_name = row["campaign_name"],
+                    channel = row["channel"],
+                    impressions = row["impressions"],
+                    clicks = row["clicks"],
+                    conversions = row["conversions"],
+                    cost = row["cost"],
+                    revenue = row["revenue"],
+                )
+                created_count += 1
+            return Response(
+                {
+                    "message": "CSV uploaded successfully.",
+                    "records_created": created_count,
+                },
+                status=status.HTTP_201_CREATED,
+            )
+        except Exception as error:
+            return Response(
+                {
+                    "error": str(error)
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
