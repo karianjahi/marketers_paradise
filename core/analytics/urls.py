@@ -1,7 +1,7 @@
 from django.urls import path
-from .import views
+from .views import CSVUploadAPIView
 
 urlpatterns = [
-    path("", views.dashboard,name="dashboard"),
-    path("upload/", views.upload_csv, name="upload_csv"),
+    path("upload/", CSVUploadAPIView.as_view(), name="csv-upload"),
 ]
+
