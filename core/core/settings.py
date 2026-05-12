@@ -10,15 +10,15 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
-from pathlib import Path
 import os
+import dj_database_url
+from pathlib import Path
 from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # load environment variables
-print(BASE_DIR)
 load_dotenv(BASE_DIR / ".env")
 
 
@@ -30,6 +30,10 @@ SECRET_KEY = os.getenv("SECRET_KEY", "unsafe-dev-key")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv("DEBUG", "False") == "True"
+
+# allowed hosts
+ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "127.0.0.1,localhost").split(",")
+
 
 # Application definition
 INSTALLED_APPS = [
