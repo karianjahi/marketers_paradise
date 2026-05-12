@@ -88,7 +88,6 @@ WSGI_APPLICATION = "core.wsgi.application"
 # }
 
 DATABASE_URL = os.environ.get("DATABASE_URL")
-print(DATABASE_URL)
 
 if DATABASE_URL:
     DATABASES = {
