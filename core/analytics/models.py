@@ -1,5 +1,5 @@
 from django.db import models
-
+from datetime import datetime
 
 class CampaignData(models.Model):
     date = models.DateField()
@@ -45,6 +45,6 @@ class CSVUploadLog(models.Model):
     error_message = models.TextField(blank=True, null=True)
     
     def __str__(self):
-        return f"{self.filename} - uploaded at {self.uploaded_at}"
+        return f"'{self.filename}' uploaded on {datetime.strftime(self.uploaded_at, "%b %d %Y at %H:%M")}"
     
     
