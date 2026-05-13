@@ -20,10 +20,20 @@ REQUIRED_COLUMNS = [
 ]
 
 class CSVUploadAPIView(APIView):
+    
     parser_classes = [MultiPartParser, FormParser]
     serializer_class = CSVUploadSerializer
+    
     def post(self, request):
-        csv_file = request.get("file")
+        serializer = self.serializer_class(data=request.data)
+        if not serializer.is_valid():
+            print(serializer.errors)
+            return Response(
+                serializer.errors,
+                status = status.HTTP_400_BAD_REQUEST
+            )
+        
+        csv_file = serializer.validated_data["file"]
         
         if not csv_file:
             return Response(
@@ -47,7 +57,7 @@ class CSVUploadAPIView(APIView):
                 )
             created_count = 0
             for _, row in df.iterrows():
-                CampaignData.object.create(
+                CampaignData.objects.create(
                     date = row["date"],
                     campaign_name = row["campaign_name"],
                     channel = row["channel"],
