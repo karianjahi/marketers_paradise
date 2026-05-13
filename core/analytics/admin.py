@@ -17,9 +17,9 @@ class CampaignDataAdmin(admin.ModelAdmin):
     )
     list_filter = (
         "channel",
-        # "date",
+        "date",
     )
     search_fields = (
         "campaign_name",
-        # "channel",
+        "channel",
     )
