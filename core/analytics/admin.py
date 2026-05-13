@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import CampaignData
+from .models import CampaignData, CSVUploadLog
 
 
 @admin.register(CampaignData)
@@ -23,3 +23,5 @@ class CampaignDataAdmin(admin.ModelAdmin):
         "campaign_name",
         "channel",
     )
+    
+admin.site.register(CSVUploadLog)
