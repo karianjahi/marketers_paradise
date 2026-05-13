@@ -7,4 +7,4 @@ class CampaignDataSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 class CSVUploadSerializer(serializers.Serializer):
-    file = serializers.FileField
+    file = serializers.FileField()
