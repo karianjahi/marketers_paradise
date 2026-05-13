@@ -5,4 +5,6 @@ class CampaignDataSerializer(serializers.ModelSerializer):
     class Meta:
         model = CampaignData
         fields = "__all__"
-        
+
+class CSVUploadSerializer(serializers.ModelSerializer):
+    file = serializers.FileField
