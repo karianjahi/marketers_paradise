@@ -27,21 +27,14 @@ class CSVUploadAPIView(APIView):
     def post(self, request):
         serializer = self.serializer_class(data=request.data)
         if not serializer.is_valid():
-            print(serializer.errors)
             return Response(
                 serializer.errors,
                 status = status.HTTP_400_BAD_REQUEST
             )
         
         csv_file = serializer.validated_data["file"]
+        print(csv_file)
         
-        if not csv_file:
-            return Response(
-                {
-                    "error": "No file was uploaded. Please upload a csv file"
-                },
-                status=status.HTTP_400_BAD_REQUEST,
-            )
         try:
             df = pd.read_csv(csv_file)
             missing_columns = [
