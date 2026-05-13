@@ -3,7 +3,9 @@ import pandas as pd
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.parsers import MultiPartParser, FormParser
 
+from .serializers import CSVUploadSerializer
 from .models import CampaignData
 
 REQUIRED_COLUMNS = [
@@ -18,6 +20,8 @@ REQUIRED_COLUMNS = [
 ]
 
 class CSVUploadAPIView(APIView):
+    parser_classes = [MultiPartParser, FormParser]
+    serializer_class = CSVUploadSerializer
     def post(self, request):
         csv_file = request.get("file")
         
@@ -62,6 +66,7 @@ class CSVUploadAPIView(APIView):
                 status=status.HTTP_201_CREATED,
             )
         except Exception as error:
+            
             return Response(
                 {
                     "error": str(error)
