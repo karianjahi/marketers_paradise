@@ -217,3 +217,4 @@ __marimo__/
 # Streamlit
 .streamlit/secrets.toml
 core/analytics/roughwork
+test_upload.csv
