@@ -13,6 +13,23 @@ class CampaignData(models.Model):
     
     uploaded_at = models.DateTimeField(auto_now_add=True)
     
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields = [
+                    "campaign_name",
+                    "date",
+                    "channel",
+                    "impressions",
+                    "clicks",
+                    "conversions",
+                    "cost",
+                    "revenue",
+                ],
+                name="unique_campaign_record"
+            )
+        ]
+    
     def __str__(self):
         return f"{self.campaign_name} conducted on {self.date}"
 
