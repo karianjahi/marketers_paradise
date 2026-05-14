@@ -136,8 +136,28 @@ class CSVUploadAPIView(APIView):
 
 
 class CampaignListAPIView(generics.ListAPIView):
-    queryset = CampaignData.objects.all()
     serializer_class = CampaignDataSerializer
+    def get_queryset(self):
+        queryset = CampaignData.objects.all()
+        channel = self.request.query_params.get("channel")
+        campaign_name = self.request.query_params.get("campaign_name")
+        start_date = self.request.query_params.get("start_date")
+        end_date = self.request.query_params.get("end_date")
+        
+        if channel:
+            queryset = queryset.filter(channel__iexact=channel)
+        
+        if campaign_name: 
+            queryset = queryset.filter(campaign_name__icontains=campaign_name)
+        
+        if start_date:
+            queryset = queryset.filter(date__gte=start_date)
+        
+        if end_date:
+            queryset = queryset.filter(date__lte=end_date)
+        
+        return queryset
+        
 
 
 class CampaignDetailAPIView(generics.RetrieveAPIView):
