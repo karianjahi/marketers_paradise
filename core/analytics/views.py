@@ -6,6 +6,7 @@ from rest_framework.parsers import MultiPartParser, FormParser
 
 from django.db import IntegrityError
 from django.db.models import Sum
+from django.shortcuts import render
 
 from .serializers import (
     CSVUploadSerializer,
@@ -225,3 +226,7 @@ class KPIAPIView(APIView):
                 "conversion_rate": round(float(conversion_rate), 2),
             },
         )
+
+
+def dashboard(request):
+    return render(request, "analytics/dashboard.html")
