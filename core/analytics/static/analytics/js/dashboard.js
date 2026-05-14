@@ -24,7 +24,7 @@ function loadKPIs(channel = "") {
     let url = "/api/kpis/";
 
     if (channel) {
-        url += "?channel" + encodeURIComponent(channel);
+        url += "?channel=" + encodeURIComponent(channel);
     }
 
     fetch(url)
@@ -43,8 +43,48 @@ function loadKPIs(channel = "") {
         })
         .catch(error => {
             console.error("Error loading KPI data:", error);
+            const errorMessage = "Error loading data";
+
+            document.getElementById("total-impressions").textContent =
+                errorMessage;
+
+            document.getElementById("total-clicks").textContent =
+                errorMessage;
+
+            document.getElementById("total-conversions").textContent =
+                errorMessage;
+
+            document.getElementById("total-cost").textContent =
+                errorMessage;
+
+            document.getElementById("total-revenue").textContent =
+                errorMessage;
+
+            document.getElementById("ctr").textContent =
+                errorMessage;
+
+            document.getElementById("conversion-rate").textContent =
+                errorMessage;
+
+            document.getElementById("cpc").textContent =
+                errorMessage;
+
+            document.getElementById("cpa").textContent =
+                errorMessage;
+
+            document.getElementById("roas").textContent =
+                errorMessage;
         });
 }
+
+// Apply filter when the button is clicked
+document.getElementById("apply-filter").addEventListener("click", function() {
+        const selectedChannel = document.getElementById("channel-filter").value;
+        loadKPIs(selectedChannel)
+    });
+
+// Load all KPIs when the page first opens
+loadKPIs();
 
 
 const channelCanvas = document.getElementById("channelChart");
@@ -53,7 +93,7 @@ const conversionsCanvas = document.getElementById("conversionsChart");
 
 fetch("/api/kpis/by-channel/")
     .then(response => response.json())
-    .then (data => {
+    .then(data => {
         const labels = data.map(item => item.channel);
         const revenues = data.map(item => item.total_revenue);
 
@@ -76,7 +116,7 @@ fetch("/api/kpis/by-channel/")
                     },
                     tooltip: {
                         callbacks: {
-                            label: function(context) {
+                            label: function (context) {
                                 return "Revenue €" + Number(context.raw).toLocaleString(undefined, {
                                     minimumFractionDigits: 2,
                                     maximumFractionDigits: 2
@@ -89,7 +129,7 @@ fetch("/api/kpis/by-channel/")
                     y: {
                         beginAtZero: true,
                         ticks: {
-                            callback: function(value) {
+                            callback: function (value) {
                                 return "€" + Number(value).toLocaleString();
                             }
                         }
@@ -119,8 +159,8 @@ fetch("/api/kpis/by-channel/")
                     },
                     tooltip: {
                         callbacks: {
-                            label: function(context) {
-                                return "Conversions: " + Number(context.raw).toLocaleString(); 
+                            label: function (context) {
+                                return "Conversions: " + Number(context.raw).toLocaleString();
                             }
                         }
                     }
@@ -129,7 +169,7 @@ fetch("/api/kpis/by-channel/")
                     y: {
                         beginAtZero: true,
                         ticks: {
-                            callback: function(value) {
+                            callback: function (value) {
                                 return Number(value).toLocaleString();
                             }
                         }
@@ -142,9 +182,3 @@ fetch("/api/kpis/by-channel/")
         console.error("Error loading channel chart data:", error)
     });
 
-    document.getElementById("apply-filter").addEventListener("click", function() {
-        const selectedChannel = document.getElementById("channel-filter").value;
-        loadKPIs(selectedChannel)
-    });
-
-    loadKPIs();
