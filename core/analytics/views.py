@@ -1,5 +1,3 @@
-import pandas as pd
-
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -9,6 +7,9 @@ from django.db import IntegrityError
 
 from .serializers import CSVUploadSerializer, CSVUploadLogSerializer
 from .models import CampaignData, CSVUploadLog
+
+from analytics import utils
+
 
 REQUIRED_COLUMNS = [
     "date",
@@ -41,11 +42,9 @@ class CSVUploadAPIView(APIView):
         invalid_rows = 0
 
         try:
-            df = pd.read_csv(csv_file)
+            df = utils.read_csv(csv_file)
             total_rows = len(df)
-            missing_columns = [
-                column for column in REQUIRED_COLUMNS if column not in df.columns
-            ]
+            missing_columns = utils.get_missing_columns(df, REQUIRED_COLUMNS)
             if missing_columns:
                 CSVUploadLog.objects.create(
                     filename=filename,
@@ -65,7 +64,7 @@ class CSVUploadAPIView(APIView):
                 )
             for _, row in df.iterrows():
                 try:
-                    if row[REQUIRED_COLUMNS].isnull().any():
+                    if not utils.is_row_valid(row, REQUIRED_COLUMNS):
                         invalid_rows += 1
                         continue
                     CampaignData.objects.create(
