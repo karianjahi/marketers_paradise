@@ -47,7 +47,9 @@ fetch("/api/kpis/")
         document.getElementById("conversion-rate").textContent = "Error loading data";
     });
 
-const chartCanvas = document.getElementById("channelChart");
+const channelCanvas = document.getElementById("channelChart");
+const conversionsCanvas = document.getElementById("conversionsChart");
+
 
 fetch("/api/kpis/by-channel/")
     .then(response => response.json())
@@ -55,9 +57,7 @@ fetch("/api/kpis/by-channel/")
         const labels = data.map(item => item.channel);
         const revenues = data.map(item => item.total_revenue);
 
-        const chartCanvas = document.getElementById("channelChart");
-
-        new Chart(chartCanvas, {
+        new Chart(channelCanvas, {
             type: "bar",
             data: {
                 labels: labels,
@@ -97,6 +97,46 @@ fetch("/api/kpis/by-channel/")
                 }
             }
         });
+
+        const conversions = data.map(item => item.total_conversions);
+        const conversionsCanvas = document.getElementById("conversionsChart")
+        new Chart(conversionsCanvas, {
+            type: "bar",
+            data: {
+                labels: labels,
+                datasets: [
+                    {
+                        label: "Conversions by Channel",
+                        data: conversions,
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return "Conversions: " + Number(context.raw).toLocaleString(); 
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return Number(value).toLocaleString();
+                            }
+                        }
+                    }
+                }
+            }
+        })
     })
     .catch(error => {
         console.error("Error loading channel chart data:", error)
