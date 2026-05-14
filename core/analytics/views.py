@@ -1,11 +1,12 @@
 from rest_framework.views import APIView
+from rest_framework import generics
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.parsers import MultiPartParser, FormParser
 
 from django.db import IntegrityError
 
-from .serializers import CSVUploadSerializer, CSVUploadLogSerializer
+from .serializers import CSVUploadSerializer, CSVUploadLogSerializer, CampaignDataSerializer
 from .models import CampaignData, CSVUploadLog
 
 from analytics import utils
@@ -128,3 +129,11 @@ class CSVUploadAPIView(APIView):
                 },
                 status=status.HTTP_400_BAD_REQUEST,
             )
+
+class CampaignListAPIView(generics.ListAPIView):
+    queryset = CampaignData.objects.all()
+    serializer_class = CampaignDataSerializer
+    
+class CampaignDetailAPIView(generics.RetrieveAPIView):
+    queryset = CampaignData.objects.all()
+    serializer_class = CampaignDataSerializer
