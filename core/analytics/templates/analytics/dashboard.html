@@ -1,46 +1,78 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{% static 'analytics/css/dashboard.css' %}">
     <title>Marketing Analytics Dashboard</title>
 </head>
+
 <body>
     <h1>Marketing Analytics Dashboard</h1>
     <h2>KPI API Response</h2>
-    
+
     <div class="kpi-grid">
         <div>
             <h3>Total Impressions</h3>
             <p id="total-impressions">Loading...</p>
         </div>
-        
+
         <div>
             <h3>Total Clicks</h3>
             <p id="total-clicks">Loading...</p>
         </div>
-    
+
         <div>
             <h3>Total Conversions</h3>
             <p id="total-conversions">Loading...</p>
         </div>
-    
-        <div>
-            <h3>Total Cost</h3>
-            <p id="total-cost">Loading...</p>
-        </div>
-    
+
         <div>
             <h3>Total Revenue</h3>
             <p id="total-revenue">Loading...</p>
         </div>
+
+        <div>
+            <h3>Total Cost</h3>
+            <p id="total-cost">Loading...</p>
+        </div>
+
+        <div>
+            <h3>CTR</h3>
+            <p id="ctr">Loading...</p>
+        </div>
+
+      <div>
+            <h3>CPC</h3>
+            <p id="cpc">Loading...</p>
+        </div>
+
+      <div>
+            <h3>CPA</h3>
+            <p id="cpa">Loading...</p>
+        </div>
+
+      <div>
+            <h3>ROAS</h3>
+            <p id="roas">Loading...</p>
+        </div>
+
+      <div>
+            <h3>Conversion Rate</h3>
+            <p id="conversion-rate">Loading...</p>
+        </div>
+
+
+
     </div>
+
 
 
 
 
     <script src="{% static 'analytics/js/dashboard.js' %}"></script>
 </body>
+
 </html>

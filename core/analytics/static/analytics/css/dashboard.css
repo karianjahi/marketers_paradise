@@ -7,8 +7,27 @@ h1 {
     margin-bottom: 30px;
 }
 
-div {
-    margin-bottom: 20px;
-    padding: 15px;
+
+.kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
+}
+
+.kpi-grid div {
+    padding: 20px;
     border: 1px solid #ddd;
+    border-radius: 12px;
+    background-color: #f9f9f9;
+}
+
+.kpi-grid h3 {
+    margin-top: 0;
+    font-size: 18px;
+}
+
+.kpi-grid p {
+    font-size: 28px;
+    font-weight: bold;
+    margin-bottom: 0;
 }
