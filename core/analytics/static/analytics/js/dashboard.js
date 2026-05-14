@@ -22,10 +22,25 @@ function formatRatio(value) {
 
 function loadKPIs(channel = "", startDate = "", endDate = "") {
     let url = "/api/kpis/";
-
+    let params = new URLSearchParams();
     if (channel) {
-        url += "?channel=" + encodeURIComponent(channel);
+        // url += "?channel=" + encodeURIComponent(channel);
+        params.append("channel", channel);
     }
+    
+    if (startDate) {
+        params.append("start_date", startDate);
+    }
+    
+    if (endDate) {
+        params.append("end-date", endDate);
+    }
+    
+    if (params.toString()) {
+        url += "?" + params.toString();
+    }
+    
+    
 
     fetch(url)
         .then(response => response.json())
@@ -99,7 +114,9 @@ function loadKPIs(channel = "", startDate = "", endDate = "") {
 // Apply filter when the button is clicked
 document.getElementById("apply-filter").addEventListener("click", function() {
         const selectedChannel = document.getElementById("channel-filter").value;
-        loadKPIs(selectedChannel)
+        const startDate = document.getElementById("start-date").value;
+        const endDate = document.getElementById("end-date").value;
+        loadKPIs(selectedChannel, startDate, endDate);
     });
 
 // Load all KPIs when the page first opens
