@@ -20,7 +20,7 @@ function formatRatio(value) {
     return Number(value).toFixed(2);
 }
 
-function loadKPIs(channel = "") {
+function loadKPIs(channel = "", startDate = "", endDate = "") {
     let url = "/api/kpis/";
 
     if (channel) {
@@ -30,16 +30,35 @@ function loadKPIs(channel = "") {
     fetch(url)
         .then(response => response.json())
         .then(data => {
-            document.getElementById("total-impressions").textContent = formatNumber(data.total_impressions);
-            document.getElementById("total-clicks").textContent = formatNumber(data.total_clicks);
-            document.getElementById("total-conversions").textContent = formatNumber(data.total_conversions);
-            document.getElementById("total-cost").textContent = formatCurrency(data.total_cost);
-            document.getElementById("total-revenue").textContent = formatCurrency(data.total_revenue);
-            document.getElementById("ctr").textContent = formatPercent(data.ctr);
-            document.getElementById("cpc").textContent = formatCurrency(data.cpc);
-            document.getElementById("cpa").textContent = formatCurrency(data.cpa);
-            document.getElementById("roas").textContent = formatRatio(data.roas);
-            document.getElementById("conversion-rate").textContent = formatPercent(data.conversion_rate);
+            document.getElementById("total-impressions").textContent = 
+                formatNumber(data.total_impressions);
+
+            document.getElementById("total-clicks").textContent = 
+                formatNumber(data.total_clicks);
+
+            document.getElementById("total-conversions").textContent = 
+                formatNumber(data.total_conversions);
+                
+            document.getElementById("total-cost").textContent = 
+                formatCurrency(data.total_cost);
+
+            document.getElementById("total-revenue").textContent = 
+                formatCurrency(data.total_revenue);
+
+            document.getElementById("ctr").textContent = 
+                formatPercent(data.ctr);
+
+            document.getElementById("cpc").textContent = 
+                formatCurrency(data.cpc);
+
+            document.getElementById("cpa").textContent = 
+                formatCurrency(data.cpa);
+
+            document.getElementById("roas").textContent = 
+                formatRatio(data.roas);
+
+            document.getElementById("conversion-rate").textContent = 
+                formatPercent(data.conversion_rate);
         })
         .catch(error => {
             console.error("Error loading KPI data:", error);
