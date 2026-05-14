@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,13 +8,8 @@
 </head>
 <body>
     <h1>Marketing Analytics Dashboard</h1>
-    <p>This dashboard will display campaign KPIs and charts.</p>
-    <ul>
-        <li>Total Impressions</li>
-        <li>Total Clicks</li>
-        <li>Total Conversions</li>
-        <li>Total Revenue</li>
-        <li>ROAS</li>
-    </ul>
+    <h2>KPI API Response</h2>
+    <pre id="kpi-output">Loading KPI data...</pre>
+    <script src="{% static 'analytics/js/dashboard.js' %}"></script>
 </body>
 </html>
