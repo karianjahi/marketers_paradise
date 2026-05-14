@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import CSVUploadAPIView, CampaignListAPIView, CampaignDetailAPIView, KPIAPIView, dashboard
+from .views import CSVUploadAPIView, CampaignListAPIView, CampaignDetailAPIView, KPIAPIView, dashboard, KPIByChannelAPIView
 
 urlpatterns = [
     path("api/upload/", CSVUploadAPIView.as_view(), name="csv-upload"),
@@ -7,5 +7,7 @@ urlpatterns = [
     path("api/campaigns/<int:pk>/", CampaignDetailAPIView.as_view(), name="campaign-detail"),
     path("api/kpis/", KPIAPIView.as_view(), name="kpi-summary"),
     path("", dashboard, name="dashboard"),
+    path("api/kpis/by-channel/", KPIByChannelAPIView.as_view(), name="kpis-by-channel"),
+    
 ]
 
