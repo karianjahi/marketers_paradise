@@ -46,3 +46,43 @@ fetch("/api/kpis/")
         document.getElementById("roas").textContent = "Error loading data";
         document.getElementById("conversion-rate").textContent = "Error loading data";
     });
+
+const chartCanvas = document.getElementById("channelChart");
+
+fetch("/api/kpis/by-channel/")
+    .then(response => response.json())
+    .then (data => {
+        const labels = data.map(item => item.channel);
+        const revenues = data.map(item => item.total_revenue);
+
+        const chartCanvas = document.getElementById("channelChart");
+
+        new Chart(chartCanvas, {
+            type: "bar",
+            data: {
+                labels: labels,
+                datasets: [
+                    {
+                        label: "Revenue by Channel",
+                        data: revenues
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        display: true
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    })
+    .catch(error => {
+        console.error("Error loading channel chart data:", error)
+    });
