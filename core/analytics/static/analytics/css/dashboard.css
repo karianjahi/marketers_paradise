@@ -31,3 +31,15 @@ h1 {
     font-weight: bold;
     margin-bottom: 0;
 }
+
+.chart-section {
+    margin-top: 40px;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    background-color: #ffffff;
+}
+
+#channelChart {
+    max-height: 400px;
+}
