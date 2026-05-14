@@ -1,4 +1,5 @@
 console.log("dashboard.js loaded");
+console.log("Chart.js:", Chart);
 
 function formatNumber(value) {
     return Number(value).toLocaleString();
