@@ -228,5 +228,30 @@ class KPIAPIView(APIView):
         )
 
 
+class KPIByChannelAPIView(APIView):
+    def get(self, request):
+        data = (
+            CampaignData.objects
+            .values("channel")
+            .annotate(total_revenue=Sum("revenue"))
+            .order_by("channel")
+        )
+        
+        results = []
+        
+        for item in data:
+            results.append(
+                {
+                    "channel": item["channel"],
+                    "total_revenue": float(item["total_revenue"] or 0)
+                }
+            )
+        print(Response(results))
+        return Response(results)
+        
+        
+
+
 def dashboard(request):
     return render(request, "analytics/dashboard.html")
+
