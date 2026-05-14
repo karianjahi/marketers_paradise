@@ -21,7 +21,7 @@ function formatRatio(value) {
 }
 
 function loadKPIs(channel = "") {
-    let url = "/api/kpis";
+    let url = "/api/kpis/";
 
     if (channel) {
         url += "?channel" + encodeURIComponent(channel);
@@ -140,4 +140,9 @@ fetch("/api/kpis/by-channel/")
     })
     .catch(error => {
         console.error("Error loading channel chart data:", error)
+    });
+
+    document.getElementById("apply-filter").addEventListener("click", function() {
+        const selectedChannel = document.getElementById("channel-filter").value;
+        loadKPIs(selectedChannel)
     });
