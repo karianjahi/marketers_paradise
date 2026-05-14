@@ -233,7 +233,10 @@ class KPIByChannelAPIView(APIView):
         data = (
             CampaignData.objects
             .values("channel")
-            .annotate(total_revenue=Sum("revenue"))
+            .annotate(
+                total_revenue=Sum("revenue"),
+                total_conversions=Sum("conversions"),
+                )
             .order_by("channel")
         )
         
@@ -243,7 +246,8 @@ class KPIByChannelAPIView(APIView):
             results.append(
                 {
                     "channel": item["channel"],
-                    "total_revenue": float(item["total_revenue"] or 0)
+                    "total_revenue": float(item["total_revenue"] or 0),
+                    "total_conversions": item["total_conversions"] or 0,
                 }
             )
         print(Response(results))
