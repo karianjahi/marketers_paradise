@@ -43,3 +43,9 @@ h1 {
 #channelChart {
     max-height: 400px;
 }
+
+.chart-description {
+    color: #666;
+    margin-top: -10px;
+    margin-bottom: 20px;
+}
