@@ -137,27 +137,27 @@ class CSVUploadAPIView(APIView):
 
 class CampaignListAPIView(generics.ListAPIView):
     serializer_class = CampaignDataSerializer
+
     def get_queryset(self):
         queryset = CampaignData.objects.all()
         channel = self.request.query_params.get("channel")
         campaign_name = self.request.query_params.get("campaign_name")
         start_date = self.request.query_params.get("start_date")
         end_date = self.request.query_params.get("end_date")
-        
+
         if channel:
             queryset = queryset.filter(channel__iexact=channel)
-        
-        if campaign_name: 
+
+        if campaign_name:
             queryset = queryset.filter(campaign_name__icontains=campaign_name)
-        
+
         if start_date:
             queryset = queryset.filter(date__gte=start_date)
-        
+
         if end_date:
             queryset = queryset.filter(date__lte=end_date)
-        
+
         return queryset
-        
 
 
 class CampaignDetailAPIView(generics.RetrieveAPIView):
@@ -168,24 +168,24 @@ class CampaignDetailAPIView(generics.RetrieveAPIView):
 class KPIAPIView(APIView):
     def get(self, request):
         queryset = CampaignData.objects.all()
-        
+
         channel = request.query_params.get("channel")
         campaign_name = request.query_params.get("campaign_name")
         start_date = request.query_params.get("start_date")
         end_date = request.query_params.get("end_date")
-        
+
         if channel:
-            queryset = queryset.filter(channel__iexact = channel)
-        
+            queryset = queryset.filter(channel__iexact=channel)
+
         if campaign_name:
-            queryset = queryset.filter(campaign_name__icontains = campaign_name)
-            
+            queryset = queryset.filter(campaign_name__icontains=campaign_name)
+
         if start_date:
-            queryset = queryset.filter(date__gte = start_date)
-        
+            queryset = queryset.filter(date__gte=start_date)
+
         if end_date:
-            queryset = queryset.filter(date__lte = end_date)
-        
+            queryset = queryset.filter(date__lte=end_date)
+
         totals = queryset.aggregate(
             total_impressions=Sum("impressions"),
             total_clicks=Sum("clicks"),
@@ -207,6 +207,12 @@ class KPIAPIView(APIView):
         )
         return Response(
             {
+                "filters": {
+                    "channel": channel,
+                    "campaign_name": campaign_name,
+                    "start_date": start_date,
+                    "end_date": end_date,
+                },
                 "total_impressions": total_impressions,
                 "total_clicks": total_clicks,
                 "total_conversions": total_conversions,
@@ -217,5 +223,5 @@ class KPIAPIView(APIView):
                 "cpa": round(float(cpa), 2),
                 "roas": round(float(roas), 2),
                 "conversion_rate": round(float(conversion_rate), 2),
-            }
+            },
         )
