@@ -146,3 +146,5 @@ fetch("/api/kpis/by-channel/")
         const selectedChannel = document.getElementById("channel-filter").value;
         loadKPIs(selectedChannel)
     });
+
+    loadKPIs();
