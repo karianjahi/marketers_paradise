@@ -72,7 +72,7 @@ fetch("/api/kpis/by-channel/")
                 responsive: true,
                 plugins: {
                     legend: {
-                        display: true
+                        display: false
                     },
                     tooltip: {
                         callbacks: {
