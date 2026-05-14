@@ -5,12 +5,16 @@ from rest_framework import status
 from rest_framework.parsers import MultiPartParser, FormParser
 
 from django.db import IntegrityError
+from django.db.models import Sum
 
-from .serializers import CSVUploadSerializer, CSVUploadLogSerializer, CampaignDataSerializer
+from .serializers import (
+    CSVUploadSerializer,
+    CSVUploadLogSerializer,
+    CampaignDataSerializer,
+)
 from .models import CampaignData, CSVUploadLog
 
 from analytics import utils
-
 
 REQUIRED_COLUMNS = [
     "date",
@@ -130,10 +134,49 @@ class CSVUploadAPIView(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
+
 class CampaignListAPIView(generics.ListAPIView):
     queryset = CampaignData.objects.all()
     serializer_class = CampaignDataSerializer
-    
+
+
 class CampaignDetailAPIView(generics.RetrieveAPIView):
     queryset = CampaignData.objects.all()
     serializer_class = CampaignDataSerializer
+
+
+class KPIAPIView(APIView):
+    def get(self, request):
+        totals = CampaignData.objects.aggregate(
+            total_impressions=Sum("impressions"),
+            total_clicks=Sum("clicks"),
+            total_conversions=Sum("conversions"),
+            total_cost=Sum("cost"),
+            total_revenue=Sum("revenue"),
+        )
+        total_impressions = totals["total_impressions"] or 0
+        total_clicks = totals["total_clicks"] or 0
+        total_conversions = totals["total_conversions"] or 0
+        total_cost = totals["total_cost"] or 0
+        total_revenue = totals["total_revenue"] or 0
+        ctr = (total_clicks / total_impressions * 100) if total_impressions else 0
+        cpc = (total_cost / total_clicks) if total_clicks else 0
+        cpa = (total_cost / total_conversions) if total_conversions else 0
+        roas = (total_revenue / total_cost) if total_cost else 0
+        conversion_rate = (
+            (total_conversions / total_clicks * 100) if total_clicks else 0
+        )
+        return Response(
+            {
+                "total_impressions": total_impressions,
+                "total_clicks": total_clicks,
+                "total_conversions": total_conversions,
+                "total_cost": round(float(total_cost), 2),
+                "total_revenue": round(float(total_revenue), 2),
+                "ctr": round(float(ctr), 2),
+                "cpc": round(float(cpc), 2),
+                "cpa": round(float(cpa), 2),
+                "roas": round(float(roas), 2),
+                "conversion_rate": round(float(conversion_rate), 2),
+            }
+        )
