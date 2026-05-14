@@ -77,7 +77,12 @@ fetch("/api/kpis/by-channel/")
                 },
                 scales: {
                     y: {
-                        beginAtZero: true
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return "€" + Number(value).toLocaleString();
+                            }
+                        }
                     }
                 }
             }
