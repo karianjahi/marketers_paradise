@@ -73,6 +73,16 @@ fetch("/api/kpis/by-channel/")
                 plugins: {
                     legend: {
                         display: true
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return "Revenue €" + Number(context.raw).toLocaleString(undefined, {
+                                    minimumFractionDigits: 2,
+                                    maximumFractionDigits: 2
+                                });
+                            }
+                        }
                     }
                 },
                 scales: {
