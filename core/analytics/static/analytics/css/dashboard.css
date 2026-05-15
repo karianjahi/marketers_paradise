@@ -111,3 +111,17 @@ h1 {
 #upload-log-table th {
     background-color: #f4f4f4;
 }
+
+.pagination-controls {
+    margin-top: 15px;
+}
+
+.pagination-controls button {
+    padding: 8px 12px;
+    margin-right: 10px;
+}
+
+#page-info {
+    margin-right: 10px;
+    font-weight: bold;
+}
