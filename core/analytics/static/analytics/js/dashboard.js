@@ -280,8 +280,8 @@ function loadCampaigns(channel = "", campaignName = "", startDate = "", endDate 
         .then(data => {
             const tableBody = document.getElementById("campaign-table-body");
             tableBody.innerHTML = "";
-
-            for (const item of data) {
+            campaigns = data.results || data;
+            for (const item of campaigns) {
                 const row = `
                     <tr>
                         <td>${item.date}</td>
@@ -379,4 +379,4 @@ loadCampaignOptions()
 loadKPIs();
 loadCharts();
 PopulateCSVLogsTableBody()
-// loadCampaigns();
+loadCampaigns();
