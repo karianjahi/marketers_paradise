@@ -240,7 +240,7 @@ class KPIByChannelAPIView(APIView):
             queryset = queryset.filter(channel__iexact=channel)
         
         if campaign_name:
-            queryset = queryset.filter(channel__icontains=campaign_name)
+            queryset = queryset.filter(campaign_name__icontains=campaign_name)
             
         if start_date: 
             queryset = queryset.filter(date__gte=start_date)
