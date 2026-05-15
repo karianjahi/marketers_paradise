@@ -3,7 +3,7 @@ from rest_framework import generics
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.parsers import MultiPartParser, FormParser
-
+from rest_framework.pagination import PageNumberPagination
 from django.db import IntegrityError
 from django.db.models import Sum
 from django.shortcuts import render
@@ -136,8 +136,16 @@ class CSVUploadAPIView(APIView):
             )
 
 
+
+class CampaignPagination(PageNumberPagination):
+    page_size = 20
+    page_size_query_param = "page_size"
+    max_page_size = 100  
+    
+    
 class CampaignListAPIView(generics.ListAPIView):
     serializer_class = CampaignDataSerializer
+    pagination_class = CampaignPagination
 
     def get_queryset(self):
         queryset = CampaignData.objects.all()
@@ -268,7 +276,6 @@ class KPIByChannelAPIView(APIView):
                     "total_conversions": item["total_conversions"] or 0,
                 }
             )
-        print(Response(results))
         return Response(results)
         
 # Get unique campaigns to use as options in html page for selecting        
