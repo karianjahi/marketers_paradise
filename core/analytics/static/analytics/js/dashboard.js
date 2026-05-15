@@ -336,9 +336,47 @@ function loadCampaignOptions() {
         });
 }
 
+// Populate csv upload logs table with data
+function PopulateCSVLogsTableBody() {
+    const uploadLogTableBody = document.getElementById("upload-log-table-body");
+    const url = "/api/upload-logs/";
+    uploadLogTableBody.innerHTML = "";
+    fetch(url)
+        .then(response => response.json())
+        .then(data => {
+            let innerTableBodyHTML = ""
+
+            for (const item of data) {
+               innerTableBodyHTML +=  
+                `
+                    <tr>
+                        <td>${item.filename}</td>
+                        <td>${item.total_rows}</td>
+                        <td>${item.created_rows}</td>
+                        <td>${item.skipped_rows}</td>
+                        <td>${item.invalid_rows}</td>
+                        <td>${item.upload_success ? "Yes": "No"}</td>
+                        <td>${new Date(item.uploaded_at).toLocaleString("en-GB", {
+                            day: "2-digit", 
+                            month: "short",
+                            year: "numeric",
+                            hour: "2-digit",
+                            minute: "2-digit",
+                            second: "2-digit",
+                        })} hrs</td>
+                    </tr>
+                    `           
+                }
+                uploadLogTableBody.innerHTML = innerTableBodyHTML;
+        })
+        .catch(error => {
+            console.error("Error loading upload logs:", error);
+        });
+}
 
 // Load all KPIs and create the charts and the campaign table when the page first opens
 loadCampaignOptions()
 loadKPIs();
 loadCharts();
+PopulateCSVLogsTableBody()
 // loadCampaigns();
