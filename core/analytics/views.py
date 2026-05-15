@@ -271,9 +271,7 @@ class KPIByChannelAPIView(APIView):
         print(Response(results))
         return Response(results)
         
-        
-
-
+# Get unique campaigns to use as options in html page for selecting        
 class CampaignOptionsAPIView(APIView):
     def get(self, request):
         campaigns = (
@@ -283,6 +281,12 @@ class CampaignOptionsAPIView(APIView):
             .order_by("campaign_name")
         )
         return Response(list(campaigns))
+    
+
+# Create a view to upload history page/section using CSVUploadLog
+class CSVUploadLogListAPIView(generics.ListAPIView):
+    queryset = CSVUploadAPIView.objects.all()
+    serializer_class = CSVUploadLogSerializer
 
 def dashboard(request):
     return render(request, "analytics/dashboard.html")
