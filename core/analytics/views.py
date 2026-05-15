@@ -230,8 +230,26 @@ class KPIAPIView(APIView):
 
 class KPIByChannelAPIView(APIView):
     def get(self, request):
+        queryset = CampaignData.objects.all()
+        channel = request.query_params.get("channel")
+        campaign_name = request.query_params.get("campaign_name")
+        start_date = request.query_params.get("start_date")
+        end_date = request.query_params.get("end_date")
+        
+        if channel:
+            queryset = queryset.filter(channel__iexact=channel)
+        
+        if campaign_name:
+            queryset = queryset.filter(channel__icontains=campaign_name)
+            
+        if start_date: 
+            queryset = queryset.filter(date__gte=start_date)
+            
+        if end_date:
+            queryset = queryset.filter(date__lte=end_date)
+        
         data = (
-            CampaignData.objects
+            queryset
             .values("channel")
             .annotate(
                 total_revenue=Sum("revenue"),
