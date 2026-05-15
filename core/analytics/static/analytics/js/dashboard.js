@@ -1,21 +1,6 @@
 console.log("dashboard.js loaded");
 console.log("Chart.js:", Chart);
 
-// Load all KPIs when the page first opens
-loadKPIs();
-loadCharts();
-loadCampaigns();
-
-// Apply filter when the apply filter button is clicked
-document.getElementById("apply-filter").addEventListener("click", function () {
-    const selectedChannel = document.getElementById("channel-filter").value;
-    const startDate = document.getElementById("start-date").value;
-    const endDate = document.getElementById("end-date").value;
-    const campaignName = document.getElementById("campaign-name-filter").value;
-    loadKPIs(selectedChannel, campaignName, startDate, endDate);
-    loadCharts(selectedChannel, campaignName, startDate, endDate);
-    loadCampaigns(selectedChannel, campaignName, startDate, endDate);
-});
 
 function formatNumber(value) {
     return Number(value).toLocaleString();
@@ -81,7 +66,7 @@ function loadKPIs(channel = "", campaignName = "", startDate = "", endDate = "")
             document.getElementById("total-revenue").textContent =
                 formatCurrency(data.total_revenue);
 
-            document.getElementById("ctr").textContent =
+                document.getElementById("ctr").textContent =
                 formatPercent(data.ctr);
 
             document.getElementById("cpc").textContent =
@@ -89,12 +74,12 @@ function loadKPIs(channel = "", campaignName = "", startDate = "", endDate = "")
 
             document.getElementById("cpa").textContent =
                 formatCurrency(data.cpa);
-
-            document.getElementById("roas").textContent =
+                
+                document.getElementById("roas").textContent =
                 formatRatio(data.roas);
-
+                
             document.getElementById("conversion-rate").textContent =
-                formatPercent(data.conversion_rate);
+            formatPercent(data.conversion_rate);
         })
         .catch(error => {
             console.error("Error loading KPI data:", error);
@@ -140,46 +125,46 @@ let conversionChart = null;
 function loadCharts(channel = "", campaignName = "", startDate = "", endDate = "") {
     let url = "/api/kpis/by-channel/";
     let params = new URLSearchParams();
-
+    
     if (channel) {
         params.append("channel", channel);
     }
-
+    
     if (campaignName) {
         params.append("campaign_name", campaignName);
     }
-
+    
     if (startDate) {
         params.append("start_date", startDate);
     }
-
+    
     if (endDate) {
         params.append("end_date", endDate);
     }
-
+    
     if (params.toString()) {
         url += "?" + params.toString();
     }
-
-
+    
+    
     fetch(url)
-        .then(response => response.json())
-        .then(data => {
-            const labels = data.map(item => item.channel);
-            const revenues = data.map(item => item.total_revenue);
-            const conversions = data.map(item => item.total_conversions);
-
-            const revenueCanvas = document.getElementById("channelChart");
-            const conversionCanvas = document.getElementById("conversionsChart");
-
-            if (revenueChart) {
-                revenueChart.destroy();
+    .then(response => response.json())
+    .then(data => {
+        const labels = data.map(item => item.channel);
+        const revenues = data.map(item => item.total_revenue);
+        const conversions = data.map(item => item.total_conversions);
+        
+        const revenueCanvas = document.getElementById("channelChart");
+        const conversionCanvas = document.getElementById("conversionsChart");
+        
+        if (revenueChart) {
+            revenueChart.destroy();
+        }
+        
+        if (conversionChart) {
+            conversionChart.destroy();
             }
-
-            if (conversionChart) {
-                conversionChart.destroy();
-            }
-
+            
             revenueChart = new Chart(revenueCanvas, {
                 type: "bar",
                 data: {
@@ -204,9 +189,9 @@ function loadCharts(channel = "", campaignName = "", startDate = "", endDate = "
                                         minimumFractionDigits: 2,
                                         maximumFractionDigits: 2
                                     }
-                                    );
-                                }
+                                );
                             }
+                        }
                         }
                     },
                     scales: {
@@ -234,9 +219,9 @@ function loadCharts(channel = "", campaignName = "", startDate = "", endDate = "
                     ]
                 },
                 options: {
-                responsive: true,
-                plugins: {
-                    legend: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
                         display: false
                     },
                     tooltip: {
@@ -259,20 +244,20 @@ function loadCharts(channel = "", campaignName = "", startDate = "", endDate = "
                 }
             }
                 
-
-            });
+            
         });
+    });
 }
 
 // populate the table function with (un)filtered data
 function loadCampaigns(channel = "", campaignName = "", startDate = "", endDate = "") {
     let url = "/api/campaigns/";
-    let params = URLSearchParams();
-
+    let params = new URLSearchParams();
+    
     if (channel) {
         params.append("channel", channel);
     }
-
+    
     if (campaignName) {
         params.append("campaign_name", campaignName);
     }
@@ -288,10 +273,10 @@ function loadCampaigns(channel = "", campaignName = "", startDate = "", endDate 
     if (params.toString()) {
         url += "?" + params.toString();
     }
-
+    
     // now that we have constructed the url required, we can fetch the data from django endpoint
     fetch(url)
-        .then(response => response.json())
+    .then(response => response.json())
         .then(data => {
             const tableBody = document.getElementById("campaign-table-body");
             tableBody.innerHTML = "";
@@ -311,10 +296,26 @@ function loadCampaigns(channel = "", campaignName = "", startDate = "", endDate 
                 `;
                 tableBody.innerHTML += row;
             }
-
-
+            
+            
         })
         .catch(error => {
             console.error("Error loading campaign records:", error);
         });
-}
+    }
+    
+    // Load all KPIs and create the charts and the campaign table when the page first opens
+    loadKPIs();
+    loadCharts();
+    loadCampaigns();
+    
+    // Apply filter when the apply filter button is clicked
+    document.getElementById("apply-filter").addEventListener("click", function () {
+        const selectedChannel = document.getElementById("channel-filter").value;
+        const startDate = document.getElementById("start-date").value;
+        const endDate = document.getElementById("end-date").value;
+        const campaignName = document.getElementById("campaign-name-filter").value;
+        loadKPIs(selectedChannel, campaignName, startDate, endDate);
+        loadCharts(selectedChannel, campaignName, startDate, endDate);
+        loadCampaigns(selectedChannel, campaignName, startDate, endDate);
+    });
