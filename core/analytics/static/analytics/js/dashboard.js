@@ -27,11 +27,11 @@ function loadKPIs(channel = "", campaignName = "", startDate = "", endDate = "")
         // url += "?channel=" + encodeURIComponent(channel);
         params.append("channel", channel);
     }
-    
+
     if (startDate) {
         params.append("start_date", startDate);
     }
-    
+
     if (endDate) {
         params.append("end_date", endDate);
     }
@@ -39,44 +39,44 @@ function loadKPIs(channel = "", campaignName = "", startDate = "", endDate = "")
     if (campaignName) {
         params.append("campaign_name", campaignName);
     }
-    
+
     if (params.toString()) {
         url += "?" + params.toString();
     }
-    
-    
+
+
 
     fetch(url)
         .then(response => response.json())
         .then(data => {
-            document.getElementById("total-impressions").textContent = 
+            document.getElementById("total-impressions").textContent =
                 formatNumber(data.total_impressions);
 
-            document.getElementById("total-clicks").textContent = 
+            document.getElementById("total-clicks").textContent =
                 formatNumber(data.total_clicks);
 
-            document.getElementById("total-conversions").textContent = 
+            document.getElementById("total-conversions").textContent =
                 formatNumber(data.total_conversions);
-                
-            document.getElementById("total-cost").textContent = 
+
+            document.getElementById("total-cost").textContent =
                 formatCurrency(data.total_cost);
 
-            document.getElementById("total-revenue").textContent = 
+            document.getElementById("total-revenue").textContent =
                 formatCurrency(data.total_revenue);
 
-            document.getElementById("ctr").textContent = 
+            document.getElementById("ctr").textContent =
                 formatPercent(data.ctr);
 
-            document.getElementById("cpc").textContent = 
+            document.getElementById("cpc").textContent =
                 formatCurrency(data.cpc);
 
-            document.getElementById("cpa").textContent = 
+            document.getElementById("cpa").textContent =
                 formatCurrency(data.cpa);
 
-            document.getElementById("roas").textContent = 
+            document.getElementById("roas").textContent =
                 formatRatio(data.roas);
 
-            document.getElementById("conversion-rate").textContent = 
+            document.getElementById("conversion-rate").textContent =
                 formatPercent(data.conversion_rate);
         })
         .catch(error => {
@@ -116,83 +116,119 @@ function loadKPIs(channel = "", campaignName = "", startDate = "", endDate = "")
 }
 
 // Apply filter when the button is clicked
-document.getElementById("apply-filter").addEventListener("click", function() {
-        const selectedChannel = document.getElementById("channel-filter").value;
-        const startDate = document.getElementById("start-date").value;
-        const endDate = document.getElementById("end-date").value;
-        const campaignName = document.getElementById("campaign-name-filter").value;
-        loadKPIs(selectedChannel, campaignName, startDate, endDate);
-    });
+document.getElementById("apply-filter").addEventListener("click", function () {
+    const selectedChannel = document.getElementById("channel-filter").value;
+    const startDate = document.getElementById("start-date").value;
+    const endDate = document.getElementById("end-date").value;
+    const campaignName = document.getElementById("campaign-name-filter").value;
+    loadKPIs(selectedChannel, campaignName, startDate, endDate);
+    loadCharts(selectedChannel, campaignName, startDate, endDate);
+});
 
 // Load all KPIs when the page first opens
 loadKPIs();
+loadCharts();
+
+let revenueChart = null;
+let conversionChart = null;
+
+function loadCharts(channel = "", campaignName = "", startDate = "", endDate = "") {
+    let url = "/api/kpis/by-channel/";
+    let params = new URLSearchParams();
+
+    if (channel) {
+        params.append("channel", channel);
+    }
+
+    if (campaignName) {
+        params.append("campaign_name", campaignName);
+    }
+
+    if (startDate) {
+        params.append("start_date", startDate);
+    }
+
+    if (endDate) {
+        params.append("end_date", endDate);
+    }
+
+    if (params.toString()) {
+        url += "?" + params.toString();
+    }
 
 
-const channelCanvas = document.getElementById("channelChart");
-const conversionsCanvas = document.getElementById("conversionsChart");
+    fetch(url)
+        .then(response => response.json())
+        .then(data => {
+            const labels = data.map(item => item.channel);
+            const revenues = data.map(item => item.total_revenue);
+            const conversions = data.map(item => item.total_conversions);
 
+            const revenueCanvas = document.getElementById("channelChart");
+            const conversionCanvas = document.getElementById("conversionsChart");
 
-fetch("/api/kpis/by-channel/")
-    .then(response => response.json())
-    .then(data => {
-        const labels = data.map(item => item.channel);
-        const revenues = data.map(item => item.total_revenue);
+            if (revenueChart) {
+                revenueChart.destroy();
+            }
 
-        new Chart(channelCanvas, {
-            type: "bar",
-            data: {
-                labels: labels,
-                datasets: [
-                    {
-                        label: "Revenue by Channel",
-                        data: revenues
-                    }
-                ]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: {
-                        display: false
+            if (conversionChart) {
+                conversionChart.destroy();
+            }
+
+            revenueChart = new Chart(revenueCanvas, {
+                type: "bar",
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: "Revenue by Channel",
+                            data: revenues
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            display: true
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function (context) {
+                                    return "Revenue €" + Number(context.raw).toLocaleString(undefined, {
+                                        minimumFractionDigits: 2,
+                                        maximumFractionDigits: 2
+                                    }
+                                    );
+                                }
+                            }
+                        }
                     },
-                    tooltip: {
-                        callbacks: {
-                            label: function (context) {
-                                return "Revenue €" + Number(context.raw).toLocaleString(undefined, {
-                                    minimumFractionDigits: 2,
-                                    maximumFractionDigits: 2
-                                });
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function (value) {
+                                    return "€" + Number(value).toLocaleString();
+                                }
                             }
                         }
                     }
                 },
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        ticks: {
-                            callback: function (value) {
-                                return "€" + Number(value).toLocaleString();
-                            }
-                        }
-                    }
-                }
-            }
-        });
+            });
 
-        const conversions = data.map(item => item.total_conversions);
-        const conversionsCanvas = document.getElementById("conversionsChart")
-        new Chart(conversionsCanvas, {
-            type: "bar",
-            data: {
-                labels: labels,
-                datasets: [
-                    {
-                        label: "Conversions by Channel",
-                        data: conversions,
-                    }
-                ]
-            },
-            options: {
+            conversionChart = new Chart(conversionCanvas, {
+                type: "bar",
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: "Conversions by Channel",
+                            data: conversions
+                        }
+                    ]
+                },
+                options: {
                 responsive: true,
                 plugins: {
                     legend: {
@@ -217,9 +253,104 @@ fetch("/api/kpis/by-channel/")
                     }
                 }
             }
-        })
-    })
-    .catch(error => {
-        console.error("Error loading channel chart data:", error)
-    });
+                
+
+            });
+        });
+}
+
+// const channelCanvas = document.getElementById("channelChart");
+// const conversionsCanvas = document.getElementById("conversionsChart");
+
+
+// fetch("/api/kpis/by-channel/")
+//     .then(response => response.json())
+//     .then(data => {
+//         const labels = data.map(item => item.channel);
+//         const revenues = data.map(item => item.total_revenue);
+
+//         new Chart(channelCanvas, {
+//             type: "bar",
+//             data: {
+//                 labels: labels,
+//                 datasets: [
+//                     {
+//                         label: "Revenue by Channel",
+//                         data: revenues
+//                     }
+//                 ]
+//             },
+//             options: {
+//                 responsive: true,
+//                 plugins: {
+//                     legend: {
+//                         display: false
+//                     },
+//                     tooltip: {
+//                         callbacks: {
+//                             label: function (context) {
+//                                 return "Revenue €" + Number(context.raw).toLocaleString(undefined, {
+//                                     minimumFractionDigits: 2,
+//                                     maximumFractionDigits: 2
+//                                 });
+//                             }
+//                         }
+//                     }
+//                 },
+//                 scales: {
+//                     y: {
+//                         beginAtZero: true,
+//                         ticks: {
+//                             callback: function (value) {
+//                                 return "€" + Number(value).toLocaleString();
+//                             }
+//                         }
+//                     }
+//                 }
+//             }
+//         });
+
+//         const conversions = data.map(item => item.total_conversions);
+//         const conversionsCanvas = document.getElementById("conversionsChart")
+//         new Chart(conversionsCanvas, {
+//             type: "bar",
+//             data: {
+//                 labels: labels,
+//                 datasets: [
+//                     {
+//                         label: "Conversions by Channel",
+//                         data: conversions,
+//                     }
+//                 ]
+//             },
+//             options: {
+//                 responsive: true,
+//                 plugins: {
+//                     legend: {
+//                         display: false
+//                     },
+//                     tooltip: {
+//                         callbacks: {
+//                             label: function (context) {
+//                                 return "Conversions: " + Number(context.raw).toLocaleString();
+//                             }
+//                         }
+//                     }
+//                 },
+//                 scales: {
+//                     y: {
+//                         beginAtZero: true,
+//                         ticks: {
+//                             callback: function (value) {
+//                                 return Number(value).toLocaleString();
+//                             }
+//                         }
+//                     }
+//                 }
+//             }
+//         })
+//     })
+//     .catch(error => {
+//         console.error("Error loading channel chart data:", error)
+//     });
 
