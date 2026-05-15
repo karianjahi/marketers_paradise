@@ -274,6 +274,16 @@ class KPIByChannelAPIView(APIView):
         
 
 
+class CampaignOptionsAPIView(APIView):
+    def get(self, request):
+        campaigns = (
+            CampaignData.objects
+            .values_list("campaign_name", flat=True)
+            .distinct()
+            .order_by("campaign_name")
+        )
+        return Response(list(campaigns))
+
 def dashboard(request):
     return render(request, "analytics/dashboard.html")
 
