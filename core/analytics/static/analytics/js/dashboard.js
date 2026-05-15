@@ -304,10 +304,6 @@ function loadCampaigns(channel = "", campaignName = "", startDate = "", endDate 
         });
     }
     
-    // Load all KPIs and create the charts and the campaign table when the page first opens
-    loadKPIs();
-    loadCharts();
-    loadCampaigns();
     
     // Apply filter when the apply filter button is clicked
     document.getElementById("apply-filter").addEventListener("click", function () {
@@ -319,3 +315,30 @@ function loadCampaigns(channel = "", campaignName = "", startDate = "", endDate 
         loadCharts(selectedChannel, campaignName, startDate, endDate);
         loadCampaigns(selectedChannel, campaignName, startDate, endDate);
     });
+
+
+// load campaign names in javascript
+function loadCampaignOptions() {
+    fetch("/api/campaign-options/")
+        .then(response => response.json())
+        .then(data => {
+            const campaignSelect = document.getElementById("campaign-name-filter");
+
+            for (const campaignName of data) {
+                const option = document.createElement("option");
+                option.value = campaignName;
+                option.textContent = campaignName;
+                campaignSelect.appendChild(option);
+            }
+        })
+        .catch(error => {
+            console.error("Error loading campaign options:", error);
+        });
+}
+
+
+// Load all KPIs and create the charts and the campaign table when the page first opens
+loadCampaignOptions()
+loadKPIs();
+loadCharts();
+// loadCampaigns();
