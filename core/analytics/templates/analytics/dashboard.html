@@ -136,7 +136,27 @@
         </table>
     </section>
 
+    <section class="table-section">
+        <h2>Upload History</h2>
+        <p class="chart-description">
+            This table shows previous CSV upload attempts and processing results.
+        </p>
+        <table id="upload-log-table">
+            <thead>
+                <tr>
+                    <th>Filename</th>
+                    <th>Total Rows</th>
+                    <th>Created</th>
+                    <th>Skipped</th>
+                    <th>Invalid</th>
+                    <th>Success</th>
+                    <th>Uploaded at</th>
+                </tr>
+            </thead>
 
+        </table>
+
+    </section>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="{% static 'analytics/js/dashboard.js' %}"></script>

@@ -95,3 +95,19 @@ h1 {
     background-color: #f4f4f4;
 }
 
+#upload-log-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+#upload-log-table th,
+#upload-log-table td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: left;
+}
+
+#upload-log-table th {
+    background-color: #f4f4f4;
+}
