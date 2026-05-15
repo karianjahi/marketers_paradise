@@ -20,7 +20,7 @@ function formatRatio(value) {
     return Number(value).toFixed(2);
 }
 
-function loadKPIs(channel = "", startDate = "", endDate = "") {
+function loadKPIs(channel = "", campaignName = "", startDate = "", endDate = "") {
     let url = "/api/kpis/";
     let params = new URLSearchParams();
     if (channel) {
@@ -33,7 +33,11 @@ function loadKPIs(channel = "", startDate = "", endDate = "") {
     }
     
     if (endDate) {
-        params.append("end-date", endDate);
+        params.append("end_date", endDate);
+    }
+
+    if (campaignName) {
+        params.append("campaign_name", campaignName);
     }
     
     if (params.toString()) {
@@ -116,7 +120,8 @@ document.getElementById("apply-filter").addEventListener("click", function() {
         const selectedChannel = document.getElementById("channel-filter").value;
         const startDate = document.getElementById("start-date").value;
         const endDate = document.getElementById("end-date").value;
-        loadKPIs(selectedChannel, startDate, endDate);
+        const campaignName = document.getElementById("campaign-name-filter").value;
+        loadKPIs(selectedChannel, campaignName, startDate, endDate);
     });
 
 // Load all KPIs when the page first opens
