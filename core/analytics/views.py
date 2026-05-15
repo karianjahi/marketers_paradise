@@ -285,7 +285,7 @@ class CampaignOptionsAPIView(APIView):
 
 # Create a view to upload history page/section using CSVUploadLog
 class CSVUploadLogListAPIView(generics.ListAPIView):
-    queryset = CSVUploadAPIView.objects.all().order_by("-uploaded_at")
+    queryset = CSVUploadLog.objects.all().order_by("-uploaded_at")
     serializer_class = CSVUploadLogSerializer
 
 def dashboard(request):
