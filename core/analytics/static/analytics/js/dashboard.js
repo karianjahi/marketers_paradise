@@ -4,6 +4,7 @@ console.log("Chart.js:", Chart);
 // Load all KPIs when the page first opens
 loadKPIs();
 loadCharts();
+loadCampaigns();
 
 // Apply filter when the apply filter button is clicked
 document.getElementById("apply-filter").addEventListener("click", function () {
@@ -13,6 +14,7 @@ document.getElementById("apply-filter").addEventListener("click", function () {
     const campaignName = document.getElementById("campaign-name-filter").value;
     loadKPIs(selectedChannel, campaignName, startDate, endDate);
     loadCharts(selectedChannel, campaignName, startDate, endDate);
+    loadCampaigns(selectedChannel, campaignName, startDate, endDate);
 });
 
 function formatNumber(value) {
@@ -259,5 +261,60 @@ function loadCharts(channel = "", campaignName = "", startDate = "", endDate = "
                 
 
             });
+        });
+}
+
+// populate the table function with (un)filtered data
+function loadCampaigns(channel = "", campaignName = "", startDate = "", endDate = "") {
+    let url = "/api/campaigns/";
+    let params = URLSearchParams();
+
+    if (channel) {
+        params.append("channel", channel);
+    }
+
+    if (campaignName) {
+        params.append("campaign_name", campaignName);
+    }
+
+    if (startDate) {
+        params.append("start_date", startDate);
+    }
+
+    if (endDate) {
+        params.append("end_date", endDate);
+    }
+
+    if (params.toString()) {
+        url += "?" + params.toString();
+    }
+
+    // now that we have constructed the url required, we can fetch the data from django endpoint
+    fetch(url)
+        .then(response => response.json())
+        .then(data => {
+            const tableBody = document.getElementById("campaign-table-body");
+            tableBody.innerHTML = "";
+
+            for (const item of data) {
+                const row = `
+                    <tr>
+                        <td>${item.date}</td>
+                        <td>${item.campaign_name}</td>
+                        <td>${item.channel}</td>
+                        <td>${formatNumber(item.impressions)}</td>
+                        <td>${formatNumber(item.clicks)}</td>
+                        <td>${formatNumber(item.conversions)}</td>
+                        <td>${formatCurrency(item.cost)}</td>
+                        <td>${formatCurrency(item.revenue)}</td>
+                    </tr>
+                `;
+                tableBody.innerHTML += row;
+            }
+
+
+        })
+        .catch(error => {
+            console.error("Error loading campaign records:", error);
         });
 }
