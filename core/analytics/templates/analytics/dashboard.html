@@ -14,29 +14,39 @@
     <!-- <h2>KPI API Response</h2> -->
 
     <section class="filter-section">
-        <label for="channel-filter">Filter by Channel</label>
+        <div class="filter-group">
+            <label for="channel-filter">Filter by Channel</label>
+    
+            <select id="channel-filter">
+                <option value="">All Channels</option>
+                <option value="Google Ads">Google Ads</option>
+                <option value="Meta Ads">Meta Ads</option>
+                <option value="LinkedIn Ads">Linkedin Ads</option>
+                <option value="Email">Email</option>
+            </select>
+        </div>
+        
+        <div class="filter-group">
+            <label for="campaign-name-filter">Campaign:</label>
+            <select id="campaign-name-filter">
+                <option value="">All Campaigns</option>
+            </select>
+        </div>
+        
+        <div class="filter-group">
+            <label for="start-date">Start Date:</label>
+            <input type="date" id="start-date">
+        </div>
+        
+        <div class="filter-group">
+            <label for="end-date">End Date:</label>
+            <input type="date" id="end-date">
+        </div>
 
-        <select id="channel-filter">
-            <option value="">All Channels</option>
-            <option value="Google Ads">Google Ads</option>
-            <option value="Meta Ads">Meta Ads</option>
-            <option value="LinkedIn Ads">Linkedin Ads</option>
-            <option value="Email">Email</option>
-        </select>
-        
-        <label for="campaign-name-filter">Campaign:</label>
-        <select id="campaign-name-filter">
-            <option value="">All Campaigns</option>
-        </select>
-        
-        <label for="start-date">Start Date:</label>
-        <input type="date" id="start-date">
-        
-        <label for="end-date">End Date:</label>
-        <input type="date" id="end-date">
-
-        
-        <button id="apply-filter">Apply Filter</button>
+        <div class="filter-group button-group">
+            <label>&nbsp;</label>
+            <button id="apply-filter">Apply Filter</button>
+        </div>
 
     </section>
 
