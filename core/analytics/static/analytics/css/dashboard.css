@@ -191,3 +191,37 @@ h1 {
     font-weight: bold;
 }
 
+#upload-message {
+    margin-top: 20px;
+    padding: 16px 20px;
+    border-left: 5px solid #28a745;
+    /* border-right: 5px solid #28a745; */
+    background-color: #f0fff4;
+    border-radius: 8px;
+    color: #155724;
+    font-size: 14px;
+    line-height: 1.6;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+
+}
+
+#upload-message p {
+    margin: 4px 0;
+}
+
+#upload-message p:first-child {
+    font-weight: 700;
+    font-size: 16px;
+}
+
+#upload-message.error {
+    border-left-color: #dc3545;
+    background-color: #fff5f5;
+    color: #721c24;
+}
+
+#upload-message.success {
+    border-left-color: #28a745;
+    background-color: #f0fff4;
+    color: #155724;
+}

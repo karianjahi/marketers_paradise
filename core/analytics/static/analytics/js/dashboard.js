@@ -398,6 +398,8 @@ function uploadCSV() {
 
     // stop if no file has been selected
     if (!file) {
+        uploadMessage.classList.remove("success");
+        uploadMessage.classList.add("error");
         uploadMessage.textContent = "Please select a CSV file first";
         return ;
     }
@@ -407,6 +409,7 @@ function uploadCSV() {
     formData.append("file", file);
 
     // Show progress message
+    uploadMessage.classList.remove("success", "error");
     uploadMessage.textContent = "Uploading...";
 
     // Send the file to Django
@@ -417,20 +420,33 @@ function uploadCSV() {
         },
         body: formData
     })
-        .then(response => response.json())
-        .then(data => {
-
+        .then(response => {
+            return response.json()
+                .then(data => {
+                    return {
+                        ok: response.ok,
+                        status: response.status,
+                        data: data
+                    };
+                });
+        })
+        .then(result => {
+            if (!result.ok) {
+                const errorMessage = result.data.error || result.data.detail || "Upload failed"
+                throw new Error(errorMessage);
+            }
+            const data = result.data;
             let uploadMessageHtml = "";
-            uploadMessageHtml += `<p>Upload successful</p>`
+            uploadMessageHtml += `<p>Upload successful</p>`;
             uploadMessageHtml += `<p>Total rows in file: ${data.total_rows}</p>`;
             uploadMessageHtml += `<p>Created rows: ${data.created_rows}</p>`;
             uploadMessageHtml += `<p>Skipped rows: ${data.skipped_rows}</p>`;
             uploadMessageHtml += `<p>Invalid rows: ${data.invalid_rows}</p>`;
 
-            // Show upload summary
-            uploadMessage.innerHTML = uploadMessageHtml;
-            
-            // Refresch all dashboard components
+            uploadMessage.classList.remove("error");
+            uploadMessage.classList.add("success");
+            uploadMessage.innerHTML = uploadMessageHtml
+
             loadCampaignOptions();
             loadKPIs();
             loadCharts();
@@ -439,14 +455,16 @@ function uploadCSV() {
             loadCampaigns("", "", "", "", currentCampaignPage);
             PopulateCSVLogsTableBody();
 
-            // Clear the selected file
             fileInput.value = "";
-
         })
         .catch(error => {
             console.error("Upload failed:", error);
-            uploadMessage.textContent = "Upload failed. Please try again."
+
+            uploadMessage.classList.remove("success");
+            uploadMessage.classList.add("error");
+            uploadMessage.textContent = error.message || "Upload failed. Please try again."
         });
+        
 }
 
 
