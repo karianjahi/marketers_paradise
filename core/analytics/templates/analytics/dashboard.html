@@ -15,11 +15,16 @@
 
     <section class="upload-section">
         <h2>Upload Campaign CSV</h2>
+        {% csrf_token %}
         <p class="chart-description">
             Upload a CSV file containing campaign performance data.
         </p>
         <input type="file", id="csv-file-input" accept=".csv">
         <button id="upload-csv-button">Upload CSV</button>
+
+        <div id="upload-message">
+            
+        </div>
     </section>
 
     <section class="filter-section">

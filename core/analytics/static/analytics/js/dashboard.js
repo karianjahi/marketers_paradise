@@ -324,6 +324,134 @@ function loadCampaigns(channel = "", campaignName = "", startDate = "", endDate 
 }
 
 
+
+
+// load campaign names in javascript
+function loadCampaignOptions() {
+    fetch("/api/campaign-options/")
+        .then(response => response.json())
+        .then(data => {
+            const campaignSelect = document.getElementById("campaign-name-filter");
+
+            for (const campaignName of data) {
+                const option = document.createElement("option");
+                option.value = campaignName;
+                option.textContent = campaignName;
+                campaignSelect.appendChild(option);
+            }
+        })
+        .catch(error => {
+            console.error("Error loading campaign options:", error);
+        });
+}
+
+// Populate csv upload logs table with data
+function PopulateCSVLogsTableBody() {
+    const uploadLogTableBody = document.getElementById("upload-log-table-body");
+    const url = "/api/upload-logs/";
+    uploadLogTableBody.innerHTML = "";
+    fetch(url)
+        .then(response => response.json())
+        .then(data => {
+            let innerTableBodyHTML = ""
+
+            for (const item of data) {
+                innerTableBodyHTML +=
+                    `
+                <tr>
+                <td>${item.filename}</td>
+                <td>${item.total_rows}</td>
+                <td>${item.created_rows}</td>
+                <td>${item.skipped_rows}</td>
+                <td>${item.invalid_rows}</td>
+                <td>${item.upload_success ? "Yes" : "No"}</td>
+                        <td>${new Date(item.uploaded_at).toLocaleString("en-GB", {
+                        day: "2-digit",
+                        month: "short",
+                        year: "numeric",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                        second: "2-digit",
+                    })} hrs</td>
+                    </tr>
+                    `
+            }
+            uploadLogTableBody.innerHTML = innerTableBodyHTML;
+        })
+        .catch(error => {
+            console.error("Error loading upload logs:", error);
+        });
+}
+
+
+// function to upload a csv file
+function getCSRFToken() {
+    return document.querySelector("[name=csrfmiddlewaretoken]").value;
+}
+
+function uploadCSV() {
+    const fileInput = document.getElementById("csv-file-input");
+    const uploadMessage = document.getElementById("upload-message");
+
+    // Get the selected file
+    const file = fileInput.files[0];
+
+    // stop if no file has been selected
+    if (!file) {
+        uploadMessage.textContent = "Please select a CSV file first";
+        return ;
+    }
+
+    // Create a FormData object and attach the file
+    const formData = new FormData();
+    formData.append("file", file);
+
+    // Show progress message
+    uploadMessage.textContent = "Uploading...";
+
+    // Send the file to Django
+    fetch("/api/upload/", {
+        method: "POST",
+        headers: {
+            "X-CSRFToken": getCSRFToken()
+        },
+        body: formData
+    })
+        .then(response => response.json())
+        .then(data => {
+
+            let uploadMessageHtml = "";
+            uploadMessageHtml += `<p>Upload successful</p>`
+            uploadMessageHtml += `<p>Total rows in file: ${data.total_rows}</p>`;
+            uploadMessageHtml += `<p>Created rows: ${data.created_rows}</p>`;
+            uploadMessageHtml += `<p>Skipped rows: ${data.skipped_rows}</p>`;
+            uploadMessageHtml += `<p>Invalid rows: ${data.invalid_rows}</p>`;
+
+            // Show upload summary
+            uploadMessage.innerHTML = uploadMessageHtml;
+            
+            // Refresch all dashboard components
+            loadCampaignOptions();
+            loadKPIs();
+            loadCharts();
+
+            currentCampaignPage = 1;
+            loadCampaigns("", "", "", "", currentCampaignPage);
+            PopulateCSVLogsTableBody();
+
+            // Clear the selected file
+            fileInput.value = "";
+
+        })
+        .catch(error => {
+            console.error("Upload failed:", error);
+            uploadMessage.textContent = "Upload failed. Please try again."
+        });
+}
+
+
+
+
 // Apply filter when the apply filter button is clicked
 document.getElementById("apply-filter").addEventListener("click", function () {
     const selectedChannel = document.getElementById("channel-filter").value;
@@ -363,66 +491,8 @@ document.getElementById("previous-page").addEventListener("click", function () {
     }
 });
 
-
-// load campaign names in javascript
-function loadCampaignOptions() {
-    fetch("/api/campaign-options/")
-        .then(response => response.json())
-        .then(data => {
-            const campaignSelect = document.getElementById("campaign-name-filter");
-
-            for (const campaignName of data) {
-                const option = document.createElement("option");
-                option.value = campaignName;
-                option.textContent = campaignName;
-                campaignSelect.appendChild(option);
-            }
-        })
-        .catch(error => {
-            console.error("Error loading campaign options:", error);
-        });
-}
-
-// Populate csv upload logs table with data
-function PopulateCSVLogsTableBody() {
-    const uploadLogTableBody = document.getElementById("upload-log-table-body");
-    const url = "/api/upload-logs/";
-    uploadLogTableBody.innerHTML = "";
-    fetch(url)
-        .then(response => response.json())
-        .then(data => {
-            let innerTableBodyHTML = ""
-
-            for (const item of data) {
-                innerTableBodyHTML +=
-                    `
-                    <tr>
-                        <td>${item.filename}</td>
-                        <td>${item.total_rows}</td>
-                        <td>${item.created_rows}</td>
-                        <td>${item.skipped_rows}</td>
-                        <td>${item.invalid_rows}</td>
-                        <td>${item.upload_success ? "Yes" : "No"}</td>
-                        <td>${new Date(item.uploaded_at).toLocaleString("en-GB", {
-                        day: "2-digit",
-                        month: "short",
-                        year: "numeric",
-                        hour: "2-digit",
-                        minute: "2-digit",
-                        second: "2-digit",
-                    })} hrs</td>
-                    </tr>
-                    `
-            }
-            uploadLogTableBody.innerHTML = innerTableBodyHTML;
-        })
-        .catch(error => {
-            console.error("Error loading upload logs:", error);
-        });
-}
-
-
-
+// upload csv file
+document.getElementById("upload-csv-button").addEventListener("click", uploadCSV);
 
 // Load all KPIs and create the charts and the campaign table when the page first opens
 loadCampaignOptions()
