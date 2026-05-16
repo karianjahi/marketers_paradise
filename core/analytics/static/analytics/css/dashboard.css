@@ -48,6 +48,20 @@ h1 {
     color: #666;
     margin-top: -10px;
     margin-bottom: 20px;
+    border-radius: 12px;
+    background-color: #ffffff;
+}
+
+.upload-section input,
+.upload-section button {
+    padding: 8px 12px;
+    margin-right: 10px;
+}
+
+.upload-section {
+    margin-bottom: 30px;
+    padding: 20px;
+    border: 1px solid #ddd;
 }
 
 /* .filter-section {
