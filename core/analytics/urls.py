@@ -9,6 +9,7 @@ from .views import (
     CampaignOptionsAPIView,
     CSVUploadLogListAPIView,
     ChannelOptionsAPIView,
+    CampaignExportCSVAPIView,
 )
 
 urlpatterns = [
@@ -29,5 +30,6 @@ urlpatterns = [
     ),
     path("api/upload-logs/", CSVUploadLogListAPIView.as_view(), name="upload-log-list"),
     path("api/channel-options/", ChannelOptionsAPIView.as_view(), name="channel-options"),
+    path("api/campaigns/export/", CampaignExportCSVAPIView.as_view(), name="campaign-export-csv"),
     
 ]
