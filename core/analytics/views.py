@@ -7,6 +7,10 @@ from rest_framework.pagination import PageNumberPagination
 from django.db import IntegrityError
 from django.db.models import Sum
 from django.shortcuts import render
+from django.http import HttpResponse
+
+import csv
+
 
 from .serializers import (
     CSVUploadSerializer,
@@ -305,6 +309,61 @@ class ChannelOptionsAPIView(APIView):
 class CSVUploadLogListAPIView(generics.ListAPIView):
     queryset = CSVUploadLog.objects.all().order_by("-uploaded_at")
     serializer_class = CSVUploadLogSerializer
+    
+
+class CampaignExportCSVAPIView(APIView):
+    def get(self, request):
+        query_set = CampaignData.objects.all()
+        channel = request.query_params.get("channel")
+        campaign_name = request.query_params.get("campagin_name")
+        start_date = request.query_params.get("start_date")
+        end_date = request.query_params.get("end_date")
+        
+        if channel:
+            query_set = query_set.filter(channel__iexact=channel)
+        
+        if campaign_name:
+            query_set = query_set.filter(campaign_name__icontains=campaign_name)
+            
+        if start_date:
+            query_set = query_set.filter(date__gte=start_date)
+        
+        if end_date:
+            query_set = query_set.filter(date__lte=end_date)
+            
+        response = HttpResponse(content_type="text/csv")
+        response["Content-Disposition"] = 'attachment; filename=campaign_export.csv'
+        
+        writer = csv.write(response)
+        
+        writer.writerow(
+            [
+                "date",
+                "campaign_name",
+                "channel",
+                "impressions",
+                "clicks",
+                "conversions",
+                "cost",
+                "revenue",
+            ]
+        )
+        
+        for campaign in query_set:
+            writer.writerow(
+                [
+                    campaign.date,
+                    campaign.campaign_name,
+                    campaign.channel,
+                    campaign.impressions,
+                    campaign.clicks,
+                    campaign.conversions,
+                    campaign.cost,
+                    campaign.revenue,
+                ]
+            )
+        return response
+
 
 def dashboard(request):
     return render(request, "analytics/dashboard.html")
