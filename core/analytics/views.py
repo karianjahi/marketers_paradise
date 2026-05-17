@@ -289,6 +289,17 @@ class CampaignOptionsAPIView(APIView):
         )
         return Response(list(campaigns))
     
+    
+# Get unique channel names to use as options in html. page for selecting
+class ChannelOptionsAPIView(APIView):
+    def get(self, request):
+        channels = (
+            CampaignData.objects
+            .values_list("channel", flat=True)
+            .distinct()
+            .order_by("channel")
+        )
+        return Response(list(channels))
 
 # Create a view to upload history page/section using CSVUploadLog
 class CSVUploadLogListAPIView(generics.ListAPIView):
