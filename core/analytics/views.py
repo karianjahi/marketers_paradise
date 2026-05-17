@@ -315,7 +315,7 @@ class CampaignExportCSVAPIView(APIView):
     def get(self, request):
         query_set = CampaignData.objects.all()
         channel = request.query_params.get("channel")
-        campaign_name = request.query_params.get("campagin_name")
+        campaign_name = request.query_params.get("campaign_name")
         start_date = request.query_params.get("start_date")
         end_date = request.query_params.get("end_date")
         
