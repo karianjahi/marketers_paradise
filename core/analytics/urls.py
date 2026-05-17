@@ -8,6 +8,7 @@ from .views import (
     KPIByChannelAPIView,
     CampaignOptionsAPIView,
     CSVUploadLogListAPIView,
+    ChannelOptionsAPIView,
 )
 
 urlpatterns = [
@@ -27,4 +28,6 @@ urlpatterns = [
         name="campaign-options",
     ),
     path("api/upload-logs/", CSVUploadLogListAPIView.as_view(), name="upload-log-list"),
+    path("api/channel-options/", ChannelOptionsAPIView.as_view(), name="channel-options"),
+    
 ]
