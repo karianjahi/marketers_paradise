@@ -326,7 +326,7 @@ function loadCampaigns(channel = "", campaignName = "", startDate = "", endDate 
 
 
 
-// load campaign names in javascript
+// load campaign names as options in javascript
 function loadCampaignOptions() {
     fetch("/api/campaign-options/")
         .then(response => response.json())
@@ -342,6 +342,26 @@ function loadCampaignOptions() {
         })
         .catch(error => {
             console.error("Error loading campaign options:", error);
+        });
+}
+
+
+// load channel names as options in javascript
+function loadChannelOptions() {
+    fetch("/api/channel-options/")
+        .then(response => response.json())
+        .then(data => {
+            const channelSelect = document.getElementById("channel-filter");
+            channelSelect.innerHTML = '<option value="">All Channels</option>';
+            for (let channel of data) {
+                const option = document.createElement("option");
+                option.value = channel;
+                option.textContent = channel;
+                channelSelect.appendChild(option);
+            }
+        })
+        .catch(error => {
+            console.error("Error loading channel options:", error);
         });
 }
 
@@ -365,8 +385,8 @@ function PopulateCSVLogsTableBody() {
                 <td>${item.skipped_rows}</td>
                 <td>${item.invalid_rows}</td>
                 <td>${item.upload_success ? "Yes" : "No"}</td>
-                        <td>${new Date(item.uploaded_at).toLocaleString("en-GB", {
-                        day: "2-digit",
+                <td>${new Date(item.uploaded_at).toLocaleString("en-GB", {
+                    day: "2-digit",
                         month: "short",
                         year: "numeric",
                         hour: "2-digit",
@@ -375,13 +395,13 @@ function PopulateCSVLogsTableBody() {
                     })} hrs</td>
                     </tr>
                     `
-            }
+                }
             uploadLogTableBody.innerHTML = innerTableBodyHTML;
         })
         .catch(error => {
             console.error("Error loading upload logs:", error);
         });
-}
+    }
 
 
 // function to upload a csv file
@@ -392,7 +412,7 @@ function getCSRFToken() {
 function uploadCSV() {
     const fileInput = document.getElementById("csv-file-input");
     const uploadMessage = document.getElementById("upload-message");
-
+    
     // Get the selected file
     const file = fileInput.files[0];
 
@@ -403,11 +423,11 @@ function uploadCSV() {
         uploadMessage.textContent = "Please select a CSV file first";
         return ;
     }
-
+    
     // Create a FormData object and attach the file
     const formData = new FormData();
     formData.append("file", file);
-
+    
     // Show progress message
     uploadMessage.classList.remove("success", "error");
     uploadMessage.textContent = "Uploading...";
@@ -422,11 +442,11 @@ function uploadCSV() {
     })
         .then(response => {
             return response.json()
-                .then(data => {
-                    return {
-                        ok: response.ok,
-                        status: response.status,
-                        data: data
+            .then(data => {
+                return {
+                    ok: response.ok,
+                    status: response.status,
+                    data: data
                     };
                 });
         })
@@ -485,14 +505,14 @@ document.getElementById("apply-filter").addEventListener("click", function () {
 document.getElementById("next-page").addEventListener("click", function () {
     if (hasNextCampaignPage) {
         currentCampaignPage += 1
-
+        
         const selectedChannel = document.getElementById("channel-filter").value;
         const campaignName = document.getElementById("campaign-name-filter").value;
         const startDate = document.getElementById("start-date").value;
         const endDate = document.getElementById("end-date").value;
-
+        
         loadCampaigns(selectedChannel, campaignName, startDate, endDate, currentCampaignPage);
-
+        
     }
 });
 
@@ -504,7 +524,7 @@ document.getElementById("previous-page").addEventListener("click", function () {
         const campaignName = document.getElementById("campaign-name-filter").value;
         const startDate = document.getElementById("start-date").value;
         const endDate = document.getElementById("end-date").value;
-
+        
         loadCampaigns(selectedChannel, campaignName, startDate, endDate, currentCampaignPage);
     }
 });
@@ -514,6 +534,7 @@ document.getElementById("upload-csv-button").addEventListener("click", uploadCSV
 
 // Load all KPIs and create the charts and the campaign table when the page first opens
 loadCampaignOptions()
+loadChannelOptions();
 loadKPIs();
 loadCharts();
 PopulateCSVLogsTableBody()
