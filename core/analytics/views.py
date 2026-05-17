@@ -334,7 +334,7 @@ class CampaignExportCSVAPIView(APIView):
         response = HttpResponse(content_type="text/csv")
         response["Content-Disposition"] = 'attachment; filename=campaign_export.csv'
         
-        writer = csv.write(response)
+        writer = csv.writer(response)
         
         writer.writerow(
             [
